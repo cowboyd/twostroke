@@ -11,6 +11,11 @@ module Twostroke
     def [](var)
       vm.global_scope.get_var(var.intern).to_ruby
     end
+    
+    def []=(name, value)
+      vm.global_scope.set_var(name.intern, Twostroke::Runtime::Types.marshal(value))
+      return value
+    end
 
     def raw_eval(src, scope = vm.global_scope.close)
       prefix = make_prefix
@@ -22,7 +27,9 @@ module Twostroke
     end  
     
     def eval(src)
-      raw_eval(src + ";").to_ruby
+      if result = raw_eval(src.to_s + ";")
+        result.to_ruby
+      end
     end
     
     def raw_exec(src, scope = nil)
